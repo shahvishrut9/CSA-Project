@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Delete Book - ABCBOOKS</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to bottom, #f12711, #f5af19);
+            color: #333;
+        }
+        .form-container {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+            width: 100%;
+        }
+        h2 {
+            margin-bottom: 20px;
+            text-align: center;
+            color: #f12711;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #f12711;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #d11109;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Delete Book</h2>
+        <form id="deleteBookForm">
+            <input type="text" id="title" placeholder="Title" required>
+            <button type="submit">Delete Book</button>
+        </form>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://cig4d8cic3.execute-api.us-east-1.amazonaws.com/prod';
+
+        document.getElementById('deleteBookForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const title = document.getElementById('title').value;
+
+            fetch(`${API_BASE_URL}/books`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ Title: title })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message || 'Book deleted successfully!');
+                window.location.href = 'dashboard.html';
+            })
+            .catch(error => console.error('Error deleting book:', error));
+        });
+    </script>
+</body>
+</html>

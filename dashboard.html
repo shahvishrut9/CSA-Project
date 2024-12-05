@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard - ABCBOOKS</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            background: linear-gradient(to bottom, #8e44ad, #3498db);
+            color: #333;
+        }
+        .header {
+            padding: 20px;
+            background-color: #4e54c8;
+            color: white;
+            text-align: center;
+        }
+        .content {
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+        .actions {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        button {
+            margin: 5px;
+            padding: 10px 20px;
+            background-color: #4e54c8;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #3b40c4;
+        }
+        #searchInput {
+            display: block;
+            margin: 10px auto;
+            padding: 10px;
+            max-width: 300px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Books Management Dashboard</h1>
+    </div>
+    <div class="content">
+        <div class="actions">
+            <button onclick="window.location.href='add-book.html'">Add Book</button>
+            <button onclick="window.location.href='edit-book.html'">Edit Book</button>
+            <button onclick="window.location.href='delete-book.html'">Delete Book</button>
+            <button onclick="logout()">Logout</button>
+        </div>
+        <input type="text" id="searchInput" placeholder="Search for a book by title..." onkeyup="searchBooks()">
+        <table id="booksTable">
+            <thead>
+                <tr>
+                    <th>Book ID</th>
+                    <th>Title</th>
+                    <th>Authors</th>
+                    <th>Publisher</th>
+                    <th>Year</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://cig4d8cic3.execute-api.us-east-1.amazonaws.com/prod';
+
+        window.onload = function() {
+            fetchBooks();
+        };
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        function fetchBooks() {
+            fetch(`${API_BASE_URL}/books`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(data => displayBooks(data))
+            .catch(error => console.error('Error fetching books:', error));
+        }
+
+        function displayBooks(books) {
+            const tableBody = document.getElementById('booksTable').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = ''; 
+            books.forEach(book => {
+                const row = tableBody.insertRow();
+                row.insertCell(0).textContent = book.book_id;
+                row.insertCell(1).textContent = book.Title;
+                row.insertCell(2).textContent = book.Authors;
+                row.insertCell(3).textContent = book.Publisher;
+                row.insertCell(4).textContent = book.Year;
+            });
+        }
+
+        function searchBooks() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.getElementById('booksTable').getElementsByTagName('tbody')[0].rows;
+
+            for (let i = 0; i < rows.length; i++) {
+                const titleCell = rows[i].cells[1].textContent.toLowerCase();
+                if (titleCell.includes(searchInput)) {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+    </script>
+</body>
+</html>
